@@ -30,29 +30,6 @@ UINT32 generateIpAddr()
    return ip;
 }
 
-string getIpStr(UINT32 ip)
-{
-   string ipStr = "";
-   short a = (short)((ip & 0xff000000) >> 24);
-   short b = (short)((ip & 0xff0000) >> 16);
-   short c = (short)((ip & 0xff00) >> 8);
-   short d = (short)(ip & 0xff);
-
-   ipStr += std::to_string(a);
-   ipStr += ".";
-   ipStr += std::to_string(b);
-   ipStr += ".";
-   ipStr += std::to_string(c);
-   ipStr += ".";
-   ipStr += std::to_string(d);
-   
-#ifdef DEBUG   
-   cout << ipStr << endl;
-#endif
-   
-   return ipStr;
-}
-
 UINT64 generateMac()
 {
    UINT64 mac = 0; // only using 6 of the 8 bytes
