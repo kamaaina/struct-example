@@ -1,4 +1,4 @@
-PROGRAM  = struct_example
+PROGRAM  = $(BINDIR)/struct_example
 OBJDIR   = obj
 BINDIR   = bin
 $(shell mkdir -p $(OBJDIR) $(BINDIR))
@@ -17,7 +17,7 @@ debug: CFLAGS += -DDEBUG -g
 debug: $(PROGRAM)
 
 $(PROGRAM): $(ALLOBJS)
-	$(CC) $(CFLAGS) -o $(BINDIR)/$@ $(ALLOBJS) $(LINC) $(LIBS)
+	$(CC) $(CFLAGS) -o $@ $(ALLOBJS) $(LINC) $(LIBS)
 
 $(OBJDIR)/%.o : %.cpp
 	$(CC) $(CFLAGS) -c $*.cpp -o $(OBJDIR)/$*.o

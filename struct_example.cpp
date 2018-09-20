@@ -86,13 +86,20 @@ int main(int argc, char* argv[])
    }
 
    DataHeader* header = new DataHeader();
-   memset(header, 0, sizeof(DataHeader));
-   fread(header, sizeof(DataHeader), 1, fp);
-   fclose(fp);
+   while(fread(header, sizeof(DataHeader), 1, fp))
+   {
+      std::cout << "############################################" << std::endl;
+      printDataHeader(header);
 
-   printDataHeader(header);
-   
+      // skip the data
+      int size = (header->udp_header & 0xFFFF0000) >> 16;
+      char *data = new char[size];
+      fread(data, size, 1, fp);
+      delete [] data;
+   }
+
    delete header;
-   
+   fclose(fp);   
+
    return 0;
 }

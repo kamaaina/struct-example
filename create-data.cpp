@@ -10,7 +10,7 @@ UINT32 generateIpAddr()
 {
    UINT32 ip = 0;
    
-   // generate secret number between 1 and 255
+   // generate random number between 1 and 255
    short a = rand() % 255 + 1;
    short b = rand() % 255 + 1;
    short c = rand() % 255 + 1;
@@ -35,6 +35,8 @@ UINT64 generateMac()
    short e = rand() % 255 + 1;
    short f = rand() % 255 + 1;
 
+   mac = (((UINT64)a << 40) | ((UINT64)b << 32) | ((UINT64)c << 24) | ((UINT64)d << 16) | ((UINT64)e << 8) | (UINT64)f);
+      
 #ifdef DEBUG
    cout << "mac: " << std::hex << uppercase
         << a << ":"
@@ -42,10 +44,11 @@ UINT64 generateMac()
         << c << ":"
         << d << ":"
         << e << ":"
-        << f << endl;
+        << f << "  ("
+        << mac << ")"
+        << endl;
 #endif
    
-   mac = (((UINT64)a << 40) | ((UINT64)b << 32) | (c << 24) | (d << 16) | (e << 8) | f);
    return mac;
 }
 
@@ -75,33 +78,43 @@ UINT64 generateUDPHeader()
    return udp;
 }
 
-int main()
+int main(int argc, char* argv[])
 {
+   int numDataSets = 1;
+   if (argc == 2)
+      numDataSets = atoi(argv[1]);
+
+   cout << "data sets to generate: " << numDataSets << endl;
+
    // seed our random number generator
    srand (time(NULL));
 
    // output file to write data to (data will change each time)
    FILE *fp = fopen("bin/generated_data.bin", "wb");
 
-   DataHeader *header = new DataHeader();
-   memset(header, 0, sizeof(DataHeader));
+   for (int i=0; i<numDataSets; i++)
+   {
+      cout << "------------------------------------" << endl;
+      DataHeader *header = new DataHeader();
+      memset(header, 0, sizeof(DataHeader));
    
-   header->mac_src = generateMac();
-   header->mac_dest = generateMac();
-   header->next_protocol = generateProtocol();
-   header->ip_src = generateIpAddr();
-   header->ip_dest = generateIpAddr();
-   header->udp_header = generateUDPHeader();
-   fwrite(header, sizeof(DataHeader), 1, fp);
+      header->mac_src = generateMac();
+      header->mac_dest = generateMac();
+      header->next_protocol = generateProtocol();
+      header->ip_src = generateIpAddr();
+      header->ip_dest = generateIpAddr();
+      header->udp_header = generateUDPHeader();
+      fwrite(header, sizeof(DataHeader), 1, fp);
 
-   // size of udp data - write 0xDD as data
-   int size = (header->udp_header & 0xFFFF0000) >> 16;
-   char *data = new char[size];
-   memset(data, 0xDD, size);
-   fwrite(data, size, 1, fp);
+      // size of udp data - write 0xDD as data
+      int size = (header->udp_header & 0xFFFF0000) >> 16;
+      char *data = new char[size];
+      memset(data, 0xDD, size);
+      fwrite(data, size, 1, fp);
 
-   delete [] data;
-   delete header;
+      delete [] data;
+      delete header;
+   }
    fclose(fp);
 
    return 0;
