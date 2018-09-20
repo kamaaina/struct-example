@@ -1,58 +1,72 @@
 #include <iostream>
+#include <sstream>
 #include <string.h>
 #include "common.h"
 
-std::string getIpStr(UINT32 ip)
+template <typename T> std::string to_string(const T& n)
 {
-   std::string ipStr = "";
+   std::ostringstream oss;
+   oss << n;
+   return oss.str();
+}
+
+void getIpStr(UINT32 ip)
+{
    short a = (short)((ip & 0xff000000) >> 24);
    short b = (short)((ip & 0xff0000) >> 16);
    short c = (short)((ip & 0xff00) >> 8);
    short d = (short)(ip & 0xff);
 
-   ipStr += std::to_string(a);
-   ipStr += ".";
-   ipStr += std::to_string(b);
-   ipStr += ".";
-   ipStr += std::to_string(c);
-   ipStr += ".";
-   ipStr += std::to_string(d);
-   
-#ifdef DEBUG   
-   cout << ipStr << endl;
-#endif
-   
-   return ipStr;
+   std::cout << std::dec
+             << a << "."
+             << b << "."
+             << c << "."
+             << d << std::endl;
 }
 
-std::string bytesToString(UINT64 bytes)
+void getMacStr(UINT64 mac)
 {
-   return "";
+   short a = (short)((mac & 0xff0000000000) >> 40);
+   short b = (short)((mac & 0xff00000000) >> 32);
+   short c = (short)((mac & 0xff000000) >> 24);
+   short d = (short)((mac & 0xff0000) >> 16);
+   short e = (short)((mac & 0xff00) >> 8);
+   short f = (short)(mac & 0xff);
+
+   std::cout << std::hex << std::uppercase
+             << a << ":"
+             << b << ":"
+             << c << ":"
+             << d << ":"
+             << e << ":"
+             << f << std::endl;
 }
 
-std::string getMacStr(UINT64 mac)
+void getUDPHeader(UINT64 udp)
 {
-   return bytesToString(mac);
-}
-
-std::string getNextProtocol(UINT16 proto)
-{
-   return bytesToString(proto);
-}
-
-std::string getUDPHeader(UINT64 udp)
-{
-   return bytesToString(udp);
+   UINT16 srcPort = (udp & 0xFFFF000000000000) >> 48;
+   UINT16 destPort = (udp & 0xFFFF00000000) >> 32;
+   UINT16 length = (udp & 0xFFFF0000) >> 16;
+   UINT16 checksum = udp & 0xFFFF;
+   std::cout << "srcPort: " << srcPort << std::endl
+             << "destPort: " << destPort << std::endl
+             << "length: " << length << std::endl
+             << std::hex << "checksum: 0x" << std::uppercase << checksum << std::endl;
 }
 
 void printDataHeader(DataHeader* header)
 {
-   std::cout << "MAC src: " << getMacStr(header->mac_src) << std::endl;
-   std::cout << "MAC dest: " << getMacStr(header->mac_dest) << std::endl;
-   std::cout << "Next Protocol: " << getNextProtocol(header->next_protocol) << std::endl;
-   std::cout << "IP src: " << getIpStr(header->ip_src) << std::endl;
-   std::cout << "IP dest: " << getIpStr(header->ip_dest) << std::endl;
-   std::cout << "UDP Header: " << getUDPHeader(header->udp_header) << std::endl;
+   std::cout << "MAC SRC: ";
+   getMacStr(header->mac_src);
+   std::cout << "MAC dest: ";
+   getMacStr(header->mac_dest);
+   std::cout << "Next Protocol: " << header->next_protocol << std::endl;
+   std::cout << "IP SRC: ";
+   getIpStr(header->ip_src);
+   std::cout << "IP DEST: ";
+   getIpStr(header->ip_dest);
+   std::cout << "-UDP Header-\n";
+   getUDPHeader(header->udp_header);
 }
 
 int main(int argc, char* argv[])
@@ -73,7 +87,7 @@ int main(int argc, char* argv[])
 
    DataHeader* header = new DataHeader();
    memset(header, 0, sizeof(DataHeader));
-
+   fread(header, sizeof(DataHeader), 1, fp);
    fclose(fp);
 
    printDataHeader(header);
