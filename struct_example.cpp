@@ -3,7 +3,7 @@
 #include <string.h>
 #include "common.h"
 
-template <typename T> std::string to_string(const T& n)
+template <class T> std::string to_string(const T& n)
 {
    std::ostringstream oss;
    oss << n;
@@ -18,10 +18,8 @@ void getIpStr(UINT32 ip)
    short d = (short)(ip & 0xff);
 
    std::cout << std::dec
-             << a << "."
-             << b << "."
-             << c << "."
-             << d << std::endl;
+             << a << "." << b << "." << c << "." << d
+             << std::endl;
 }
 
 void getMacStr(UINT64 mac)
@@ -34,12 +32,8 @@ void getMacStr(UINT64 mac)
    short f = (short)(mac & 0xff);
 
    std::cout << std::hex << std::uppercase
-             << a << ":"
-             << b << ":"
-             << c << ":"
-             << d << ":"
-             << e << ":"
-             << f << std::endl;
+             << a << ":" << b << ":" << c << ":" << d << ":" << e << ":" << f
+             << std::endl;
 }
 
 void getUDPHeader(UINT64 udp)
