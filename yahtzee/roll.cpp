@@ -17,13 +17,10 @@ Roll::~Roll()
 UINT64 Roll::handleTurn()
 {
    Common::setByteValue(dice_, nextDieRoll(), 0);
-   Common::setByteValue(dice_, 0, 0);   
-   Common::setByteValue(dice_, nextDieRoll(), 0);
-/*   Common::setByteValue(dice_, nextDieRoll(), 1);
+   Common::setByteValue(dice_, nextDieRoll(), 1);
    Common::setByteValue(dice_, nextDieRoll(), 2);
    Common::setByteValue(dice_, nextDieRoll(), 3);
    Common::setByteValue(dice_, nextDieRoll(), 4);
-*/
 
    printDice();
    

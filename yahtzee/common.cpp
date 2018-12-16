@@ -16,6 +16,6 @@ void Common::setByteValue(UINT64 &data, short value, int byte)
 void Common::resetByteValue(UINT64 &data, int byte)
 {
    printf("##byte: %i\n", byte);
-   data &= 0 << (byte * 8);
+   data &= ~(0 << (byte * 8));
 }
 
